@@ -1,0 +1,18 @@
+name: etsy_share
+description: Etsy product sharing app
+publish_to: none
+version: 1.0.0
+
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.6
+  url_launcher: ^6.1.10
+  share_plus: ^6.3.0
+  webview_flutter: ^4.0.7
+
+flutter:
+  uses-material-design: true
