@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Etsy Ürün Bilgi Çekme</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        max-width: 700px;
+    }
+    input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        margin-bottom: 15px;
+        border-radius: 8px;
+    }
+    button {
+        padding: 12px 18px;
+        background: black;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+    img {
+        width: 100%;
+        margin-top: 20px;
+        border-radius: 10px;
+    }
+    .box {
+        background: #f7f7f7;
+        padding: 12px;
+        border-radius: 10px;
+        margin-top: 15px;
+    }
+</style>
+</head>
+<body>
+
+<h2>Etsy Ürün Bilgisi Çekme Aracı</h2>
+
+<input id="url" placeholder="Etsy ürün linkini buraya yapıştır">
+<button onclick="getProduct()">Bilgileri Getir</button>
+
+<div id="result"></div>
+
+<script>
+async function getProduct() {
+    const link = document.getElementById("url").value;
+    if (!link) return alert("Lütfen bir Etsy linki girin");
+
+    document.getElementById("result").innerHTML = "Yükleniyor...";
+
+    try {
+        const html = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(link))
+            .then(r => r.text());
+
+        const imageMatch = html.match(/"url_fullxfull":"([^"]+)"/);
+        const image = imageMatch ? imageMatch[1].replace(/\\u0026/g, "&") : "";
+
+        const titleMatch = html.match(/<title>(.*?)<\/title>/);
+        let title = titleMatch ? titleMatch[1].replace("| Etsy", "").trim() : "";
+
+        const hashtags = title
+            .toLowerCase()
+            .replace(/[^a-zA-Z0-9ğüşöçıİĞÜŞÖÇ ]/g, "")
+            .split(" ")
+            .map(w => "#" + w)
+            .join(" ");
+
+        document.getElementById("result").innerHTML = `
+            <h3>Ürün Görseli</h3>
+            <img src="${image}">
+
+            <div class="box"><strong>Ürün Linki:</strong><br>${link}</div>
+            <div class="box"><strong>Hashtagler:</strong><br>${hashtags}</div>
+            <div class="box"><strong>Başlık:</strong><br>${title}</div>
+        `;
+    } catch (e) {
+        document.getElementById("result").innerHTML = "Hata oluştu. Link doğru mu?";
+    }
+}
+</script>
+</body>
+</html>
